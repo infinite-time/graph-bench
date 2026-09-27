@@ -59,7 +59,6 @@ class NeptuneBoltClient:
         self._driver = GraphDatabase.driver(
             self.cfg.bolt_uri,
             auth=None,
-            encrypted=True,
         )
 
     def run(self, cypher: str, params: Optional[dict] = None) -> list[dict]:
