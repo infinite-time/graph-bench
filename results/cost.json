@@ -1,0 +1,61 @@
+{
+  "assumptions": {
+    "storage_gb": 50.0,
+    "monthly_io_millions": 200.0,
+    "neptune_instance_hourly": 0.348,
+    "neptune_replicas": 0,
+    "neptune_ncu_hour": 0.1098,
+    "neptune_avg_ncu": 2.5,
+    "neptune_serverless_hours": 730,
+    "storage_per_gb_month": 0.1,
+    "io_per_million": 0.2,
+    "backup_per_gb_month": 0.021,
+    "backup_gb": 50.0,
+    "neo4j_ec2_hourly": 0.1664,
+    "neo4j_ebs_gb": 100.0,
+    "neo4j_ebs_per_gb_month": 0.08,
+    "neo4j_ops_monthly": 500.0,
+    "savings_plan_discount": 0.0,
+    "years": 3
+  },
+  "months": 36,
+  "scenarios": {
+    "Neptune Provisioned (db.r5.large)": {
+      "monthly": {
+        "compute": 254.04,
+        "storage_io": 46.05,
+        "total": 300.09
+      },
+      "monthly_total": 300.09,
+      "annual_total": 3601.08,
+      "horizon_total": 10803.24
+    },
+    "Neptune Serverless (avg 2.5 NCU)": {
+      "monthly": {
+        "compute": 200.38,
+        "storage_io": 46.05,
+        "total": 246.43
+      },
+      "monthly_total": 246.43,
+      "annual_total": 2957.16,
+      "horizon_total": 8871.48
+    },
+    "Neo4j Self-Hosted (EC2 r6i.large)": {
+      "monthly": {
+        "compute": 121.47,
+        "storage": 8.0,
+        "ops": 500.0,
+        "total": 629.47
+      },
+      "monthly_total": 629.47,
+      "annual_total": 7553.64,
+      "horizon_total": 22660.92
+    }
+  },
+  "cheapest": "Neptune Serverless (avg 2.5 NCU)",
+  "ranking": [
+    "Neptune Serverless (avg 2.5 NCU)",
+    "Neptune Provisioned (db.r5.large)",
+    "Neo4j Self-Hosted (EC2 r6i.large)"
+  ]
+}

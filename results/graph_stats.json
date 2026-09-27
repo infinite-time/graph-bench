@@ -1,0 +1,19 @@
+{
+  "BusinessUnit": 10,
+  "SourceSystem": 40,
+  "Dataset": 1200,
+  "Field": 18000,
+  "Transformation": 3500,
+  "Report": 600,
+  "Control": 900,
+  "PRODUCES": 1200,
+  "HAS_FIELD": 18000,
+  "OWNED_BY": 1200,
+  "DERIVES_FROM": 33173,
+  "CONSUMES": 9097,
+  "OUTPUTS": 3500,
+  "FEEDS": 3170,
+  "VALIDATES": 1919,
+  "_total_nodes": 24250,
+  "_total_rels": 71259
+}
