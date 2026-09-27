@@ -58,7 +58,7 @@ class NeptuneBoltClient:
         # test cluster with IAM auth disabled, empty auth is correct.
         self._driver = GraphDatabase.driver(
             self.cfg.bolt_uri,
-            auth=("", ""),
+            auth=None,
             encrypted=True,
         )
 
