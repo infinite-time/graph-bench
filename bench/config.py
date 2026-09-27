@@ -29,7 +29,7 @@ class NeptuneConfig:
     # Neptune speaks the Bolt protocol on port 8182 with encryption on.
     # The endpoint is the *cluster* (writer) endpoint from the AWS console.
     # Leave endpoint empty to skip Neptune entirely (Neo4j-only run).
-    endpoint: str = _env("NEPTUNE_ENDPOINT", "")  # e.g. mydb.cluster-xxxx.us-east-1.neptune.amazonaws.com
+    endpoint: str = _env("NEPTUNE_ENDPOINT", "lineage-bench.cluster-c45ky00a8417.us-east-1.neptune.amazonaws.com")  # e.g. mydb.cluster-xxxx.us-east-1.neptune.amazonaws.com
     port: int = int(_env("NEPTUNE_PORT", "8182"))
     region: str = _env("NEPTUNE_REGION", "us-east-1")
     # "bolt"  -> use the neo4j bolt driver over bolt+s://endpoint:8182
