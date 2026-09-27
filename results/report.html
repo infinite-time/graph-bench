@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neo4j vs Neptune — Data Lineage Benchmark</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  h1 { font-size: 1.6rem; }
+  h2 { margin-top: 2rem; border-bottom: 2px solid #8884; padding-bottom: .3rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #8884; padding: .5rem .6rem; text-align: left; }
+  th { background: #8882; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85em; }
+  .cat { font-size: .75em; opacity: .6; }
+  .win { font-weight: 600; }
+  .fail { color: #c0392b; font-weight: 600; }
+  .note { font-size: .9em; opacity: .8; }
+  .status { display: inline-block; padding: .1rem .5rem; border-radius: 4px;
+    background: #8882; font-size: .85em; margin-right: .5rem; }
+</style></head><body>
+<h1>Neo4j vs Amazon Neptune — Capital-Markets Data-Lineage Benchmark</h1>
+<p class="note">Generated 2026-09-27 11:56 UTC</p>
+<p>
+  <span class="status">Neo4j: run</span>
+  <span class="status">Neptune: run</span>
+</p>
+
+
+        <h2>Dataset</h2>
+        <p>Synthetic capital-markets data-lineage graph:
+        <b>24,250</b> nodes,
+        <b>71,259</b> edges.
+        Deterministic (seeded) so every run is identical and comparable.</p>
+        
+
+<h2>Query latency (warm mean, lower is better)</h2>
+<table>
+  <thead><tr><th>Key</th><th>Query</th><th class="num">Neo4j</th>
+  <th class="num">Neptune</th><th>Faster</th></tr></thead>
+  <tbody>
+        <tr>
+          <td class="mono">q01_count_nodes</td>
+          <td>Count all nodes by label<div class="cat">simple</div></td>
+          <td class="num">35.20ms</td>
+          <td class="num">358.69ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q02_fields_of_dataset</td>
+          <td>Fields produced by a source system<div class="cat">filter</div></td>
+          <td class="num">20.35ms</td>
+          <td class="num">14.03ms</td>
+          <td class="win">Neptune</td>
+        </tr>
+        <tr>
+          <td class="mono">q03_direct_upstream</td>
+          <td>Direct upstream fields of a field<div class="cat">multi_hop</div></td>
+          <td class="num">12.64ms</td>
+          <td class="num">7.33ms</td>
+          <td class="win">Neptune</td>
+        </tr>
+        <tr>
+          <td class="mono">q04_upstream_depth5</td>
+          <td>Upstream lineage to depth 5<div class="cat">lineage</div></td>
+          <td class="num">14.90ms</td>
+          <td class="num">13.53ms</td>
+          <td class="win">Neptune</td>
+        </tr>
+        <tr>
+          <td class="mono">q05_full_upstream_unbounded</td>
+          <td>Full upstream lineage (unbounded)<div class="cat">recursion</div></td>
+          <td class="num">98.78ms</td>
+          <td class="num"><span class="fail">not supported</span></td>
+          <td class="win"></td>
+        </tr>
+        <tr>
+          <td class="mono">q06_impact_downstream_reports</td>
+          <td>Impact analysis: reports affected by a field<div class="cat">lineage</div></td>
+          <td class="num">10.57ms</td>
+          <td class="num">22.90ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q07_shortest_path</td>
+          <td>Shortest lineage path between two fields<div class="cat">path</div></td>
+          <td class="num">10.05ms</td>
+          <td class="num">706.08ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q08_uncontrolled_paths</td>
+          <td>Report fields with no control within 2 hops upstream<div class="cat">lineage</div></td>
+          <td class="num">11.71ms</td>
+          <td class="num">16.27ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q09_cross_bu_lineage</td>
+          <td>Cross business-unit data flows<div class="cat">aggregation</div></td>
+          <td class="num">133.90ms</td>
+          <td class="num">618.84ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q10_transform_fanout</td>
+          <td>Highest fan-out transformations<div class="cat">aggregation</div></td>
+          <td class="num">50.88ms</td>
+          <td class="num">157.84ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q11_all_paths_enumerate</td>
+          <td>Enumerate all lineage paths to depth 6<div class="cat">path</div></td>
+          <td class="num">10.44ms</td>
+          <td class="num">20.02ms</td>
+          <td class="win">Neo4j</td>
+        </tr>
+        <tr>
+          <td class="mono">q12_apoc_subgraph</td>
+          <td>Neighbourhood subgraph extraction<div class="cat">recursion</div></td>
+          <td class="num"><span class="fail">error</span></td>
+          <td class="num">20.00ms</td>
+          <td class="win"></td>
+        </tr></tbody>
+</table>
+<p class="note">Warm mean excludes the first (cold) execution. Each query runs
+multiple iterations; see the JSON in <span class="mono">results/</span> for
+cold, p50, p95, p99 and stddev.</p>
+
+<h2>Query complexity &amp; compatibility</h2>
+<p>Every query is authored in idiomatic Neo4j Cypher and again in
+Neptune-compatible openCypher. Where Neptune cannot express a construct
+(notably <span class="mono">shortestPath()</span> and APOC procedures), the
+openCypher variant either uses a supported rewrite or is flagged as
+<span class="fail">not supported</span> above — that gap is itself a result.</p>
+
+
+        <h2>Load throughput</h2>
+        <ul>
+          <li>Neo4j: 12.94s total (nodes 3.31s, rels 9.63s)</li>
+          <li>Neptune: 257.63s total (nodes 27.2s, rels 230.43s)</li>
+        </ul>
+        <p class="note">Both loads use identical batched UNWIND Cypher over Bolt
+        for a fair comparison (not engine-specific bulk loaders).</p>
+        
+
+<h2>3-year total cost of ownership</h2>
+
+        <table>
+          <thead><tr><th>Scenario</th><th>Monthly</th><th>Annual</th>
+          <th>3-Year</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Neptune Provisioned (db.r5.large)</td>
+              <td class="num">$300.09</td>
+              <td class="num">$3,601.08</td>
+              <td class="num">$10,803.24</td>
+            </tr>
+            <tr>
+              <td>Neptune Serverless (avg 2.5 NCU)</td>
+              <td class="num">$246.43</td>
+              <td class="num">$2,957.16</td>
+              <td class="num">$8,871.48</td>
+            </tr>
+            <tr>
+              <td>Neo4j Self-Hosted (EC2 r6i.large)</td>
+              <td class="num">$629.47</td>
+              <td class="num">$7,553.64</td>
+              <td class="num">$22,660.92</td>
+            </tr></tbody>
+        </table>
+        <p class="note">Cheapest over horizon: <b>Neptune Serverless (avg 2.5 NCU)</b>.
+        All inputs are editable in <span class="mono">bench/cost_model.py</span>.</p>
+        
+
+<h2>How to read this</h2>
+<ul>
+  <li><b>Performance:</b> the latency table. Neo4j (in-memory, local) will
+  usually win raw latency; Neptune trades some latency for being fully managed.</li>
+  <li><b>Cost:</b> the TCO table. Neptune serverless can be cheapest at low/
+  variable load; self-hosted Neo4j cost is dominated by ops effort (editable).</li>
+  <li><b>Complexity:</b> the compatibility column. Neo4j runs everything;
+  Neptune needs rewrites and cannot do shortestPath()/APOC.</li>
+</ul>
+</body></html>
