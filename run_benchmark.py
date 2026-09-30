@@ -1,21 +1,3 @@
-#!/usr/bin/env python3
-"""
-Main entry point for the Neo4j vs Neptune data-lineage benchmark.
-
-Usage (from the project root, inside your virtualenv):
-
-    python run_benchmark.py generate          # build the CSV graph
-    python run_benchmark.py load --db neo4j    # load into Neo4j
-    python run_benchmark.py load --db neptune  # load into Neptune (if configured)
-    python run_benchmark.py bench --db neo4j   # run queries on Neo4j
-    python run_benchmark.py bench --db neptune # run queries on Neptune
-    python run_benchmark.py cost               # print/write the TCO model
-    python run_benchmark.py report             # build the HTML report
-    python run_benchmark.py all --db neo4j     # generate+load+bench+cost+report
-
-Neptune is only touched if NEPTUNE_ENDPOINT is set (env var or config.py).
-Everything writes JSON into ./results so `report` can combine runs.
-"""
 from __future__ import annotations
 
 import argparse
