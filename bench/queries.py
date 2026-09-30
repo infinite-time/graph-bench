@@ -1,40 +1,4 @@
-"""
-The benchmark query catalog.
 
-This is the intellectual core of the "ability to write complex queries"
-criterion. Each entry models a *real data-lineage question* an investment
-bank running capital-markets processes would ask of a lineage knowledge graph,
-for example:
-
-  - "If this source feed is wrong, which regulatory reports are affected?"
-  - "Show the full upstream lineage of this figure on the FRTB report."
-  - "Which fields feed a report but have no data-quality control on the path?"
-
-Every query is written twice:
-
-  * `cypher`      - idiomatic Neo4j Cypher (may use APOC / shortestPath).
-  * `opencypher`  - a Neptune-compatible rewrite (or None if there is simply
-                    no equivalent, which is itself a finding we report).
-
-Neptune's openCypher engine, per AWS documentation, does NOT support:
-  - shortestPath() / allShortestPaths()
-  - APOC procedures (apoc.*)
-  - MANDATORY MATCH
-  - non-static SKIP / LIMIT
-So where a Neo4j query uses those, the openCypher variant uses a supported
-construction (bounded variable-length paths, WITH aggregation, etc.), and the
-`neptune_native` flag records whether Neptune can express the query at all.
-
-The GRAPH MODEL these queries run against (built by data_generator.py):
-
-  (:SourceSystem)-[:PRODUCES]->(:Dataset)-[:HAS_FIELD]->(:Field)
-  (:Field)-[:DERIVES_FROM]->(:Field)            # field-level lineage edges
-  (:Transformation)-[:CONSUMES]->(:Field)
-  (:Transformation)-[:OUTPUTS]->(:Field)
-  (:Field)-[:FEEDS]->(:Report)
-  (:Control)-[:VALIDATES]->(:Field)
-  (:Dataset)-[:OWNED_BY]->(:BusinessUnit)
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -53,8 +17,7 @@ class BenchQuery:
     note: str = ""         # human note about any semantic difference
 
 
-# A representative :Report id and :Field id are injected at run time so the
-# parameterised queries hit real data. We use $reportId / $fieldId params.
+
 
 QUERIES: list[BenchQuery] = [
 
