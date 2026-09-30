@@ -1,23 +1,4 @@
-"""
-Unified client layer.
 
-Both Neo4j and Amazon Neptune speak the Bolt protocol, so the *same* `neo4j`
-Python driver can talk to either one — that keeps the benchmark fair (identical
-client, identical serialisation path) and the code small.
-
-  * Neo4jClient   -> bolt://host:7687        (local Docker container)
-  * NeptuneClient -> bolt+s://endpoint:8182  (encrypted; empty auth)
-
-A second Neptune transport (`NeptuneHttpClient`) uses boto3's `neptunedata`
-API over HTTPS. Use it when Bolt is blocked or when IAM auth is required; it is
-slightly slower per call because of request signing but needs no open Bolt port.
-
-All clients expose the same tiny interface:
-
-    client.run(cypher, params) -> list[dict]     # materialised rows
-    client.name                                  # "Neo4j" / "Neptune"
-    client.close()
-"""
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -27,8 +8,8 @@ from .config import CONFIG, Neo4jConfig, NeptuneConfig
 
 class Neo4jClient:
     def __init__(self, cfg: Neo4jConfig | None = None):
-        from neo4j import GraphDatabase  # imported lazily so importing this
-        self.cfg = cfg or CONFIG.neo4j    # module never *requires* the driver
+        from neo4j import GraphDatabase  
+        self.cfg = cfg or CONFIG.neo4j 
         self.name = "Neo4j"
         self._driver = GraphDatabase.driver(
             self.cfg.uri, auth=(self.cfg.user, self.cfg.password)
@@ -53,9 +34,6 @@ class NeptuneBoltClient:
         from neo4j import GraphDatabase
         self.cfg = cfg or CONFIG.neptune
         self.name = "Neptune"
-        # Neptune requires encryption. Auth is empty ("","") unless IAM is on
-        # (IAM signing over Bolt needs a custom auth token; see docs). For a
-        # test cluster with IAM auth disabled, empty auth is correct.
         self._driver = GraphDatabase.driver(
             self.cfg.bolt_uri,
             auth=None,
