@@ -1,15 +1,3 @@
-"""
-Build a single self-contained HTML report from the JSON files in results/.
-
-Combines whatever is present:
-  * bench_neo4j.json / bench_neptune.json  (per-query latencies)
-  * load_neo4j.json / load_neptune.json    (load throughput)
-  * cost.json                              (TCO model)
-  * graph_stats.json                       (dataset size)
-
-If only Neo4j was run (no Neptune configured), the report still renders and
-notes Neptune as "not run" rather than failing.
-"""
 from __future__ import annotations
 
 import json
@@ -38,7 +26,7 @@ def build_html(results_dir: Path) -> Path:
     cost = _load(results_dir / "cost.json")
     gstats = _load(results_dir / "graph_stats.json")
 
-    # index query results by key
+    
     def index(payload):
         if not payload:
             return {}
@@ -59,7 +47,7 @@ def build_html(results_dir: Path) -> Path:
         neo_ok = n["supported"] if n else None
         nep_ok = p["supported"] if p else None
 
-        # winner
+      
         winner = ""
         if neo_warm is not None and nep_warm is not None:
             if neo_warm < nep_warm:
@@ -85,7 +73,7 @@ def build_html(results_dir: Path) -> Path:
           <td class="win">{winner}</td>
         </tr>""")
 
-    # cost section
+ 
     cost_html = "<p>No cost model run.</p>"
     if cost:
         crows = []
@@ -107,7 +95,7 @@ def build_html(results_dir: Path) -> Path:
         All inputs are editable in <span class="mono">bench/cost_model.py</span>.</p>
         """
 
-    # load section
+  
     load_html = ""
     if load_neo or load_nep:
         def load_line(label, d):
@@ -126,7 +114,7 @@ def build_html(results_dir: Path) -> Path:
         for a fair comparison (not engine-specific bulk loaders).</p>
         """
 
-    # dataset section
+  
     ds_html = ""
     if gstats:
         ds_html = f"""
