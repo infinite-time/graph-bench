@@ -1,15 +1,3 @@
-"""
-Benchmark runner: executes the query catalog against a client, times each run,
-and produces per-query statistics (cold, warm-mean, p50/p95/p99, stddev).
-
-Fairness rules:
-  * Identical driver for both engines (Bolt).
-  * First `warmup` executions are recorded but reported separately as "cold".
-  * Remaining `iterations - warmup` are the "warm" sample used for percentiles.
-  * A query that errors (e.g. Neptune meeting shortestPath) is recorded as a
-    failure with the error text — not silently dropped. Compatibility is a
-    first-class result, not an exception to hide.
-"""
 from __future__ import annotations
 
 import statistics
@@ -28,7 +16,7 @@ class QueryResult:
     category: str
     database: str
     variant: str            # "cypher" | "opencypher"
-    supported: bool         # did it run without error?
+    supported: bool        
     error: Optional[str]
     cold_ms: Optional[float]
     warm_mean_ms: Optional[float]
