@@ -1,15 +1,4 @@
-"""
-Load the generated CSV graph into a target database (Neo4j or Neptune) using
-batched, parameterised openCypher that runs identically on both engines.
 
-We deliberately do NOT use Neo4j's `LOAD CSV` or Neptune's bulk loader here,
-because those are engine-specific and would make load times incomparable.
-Instead we stream rows from CSV and send them in UNWIND batches over Bolt —
-the same code path for both databases, so "load throughput" is a fair number.
-
-(For a real multi-million-node production load you would use Neptune's bulk
-loader from S3 and Neo4j's admin import; that is called out in the docs.)
-"""
 from __future__ import annotations
 
 import csv
@@ -18,7 +7,7 @@ from pathlib import Path
 
 from .config import CONFIG
 
-# Index / constraint statements. Both engines accept these forms.
+# Index / constraint statements
 CONSTRAINTS = [
     "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Field)          REQUIRE n.fieldId IS UNIQUE",
     "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Dataset)        REQUIRE n.datasetId IS UNIQUE",
@@ -29,7 +18,6 @@ CONSTRAINTS = [
     "CREATE CONSTRAINT IF NOT EXISTS FOR (n:BusinessUnit)   REQUIRE n.buId IS UNIQUE",
 ]
 
-# Node file -> (label, id-property, all columns)
 NODE_FILES = [
     ("nodes_bu.csv",        "BusinessUnit",   ["buId", "name"]),
     ("nodes_source.csv",    "SourceSystem",   ["sourceId", "name", "kind"]),
@@ -40,7 +28,6 @@ NODE_FILES = [
     ("nodes_control.csv",   "Control",        ["controlId", "name"]),
 ]
 
-# Rel file -> (fromLabel, fromKey, fromCol, REL, toLabel, toKey, toCol)
 REL_FILES = [
     ("rel_produces.csv",  "SourceSystem",   "sourceId",    "sourceId",   "PRODUCES",     "Dataset",        "datasetId",   "datasetId"),
     ("rel_has_field.csv", "Dataset",        "datasetId",   "datasetId",  "HAS_FIELD",    "Field",          "fieldId",     "fieldId"),
@@ -72,8 +59,7 @@ def _batches(iterable, size):
 
 
 def wipe(client) -> None:
-    """Delete everything. Batched so it works on both engines without OOM."""
-    # Drop relationships then nodes in chunks.
+
     while True:
         res = client.run(
             "MATCH ()-[r]->() WITH r LIMIT 50000 DELETE r RETURN count(r) AS c"
@@ -92,7 +78,7 @@ def create_constraints(client) -> None:
     for stmt in CONSTRAINTS:
         try:
             client.run(stmt)
-        except Exception as e:  # Neptune manages some indexes automatically
+        except Exception as e: 
             print(f"    (constraint skipped: {str(e)[:70]})")
 
 
@@ -103,7 +89,6 @@ def load_nodes(client, data_dir: Path, batch_size: int) -> dict:
         if not path.exists():
             continue
         idprop = cols[0]
-        # Build a SET clause for the non-id columns.
         set_props = ", ".join(f"n.{c} = row.{c}" for c in cols[1:])
         set_clause = f"SET {set_props}" if set_props else ""
         cypher = (
